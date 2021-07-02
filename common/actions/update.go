@@ -38,12 +38,7 @@ func UpdateAction(control dto.Control) gin.HandlerFunc {
 		}
 		object.SetUpdateBy(user.GetUserId(c))
 
-		//数据权限检查
-		p := GetPermissionFromContext(c)
-
-		db = db.WithContext(c).Scopes(
-			Permission(object.TableName(), p),
-		).Where(req.GetId()).Updates(object)
+		db = db.WithContext(c).Where(req.GetId()).Updates(object)
 		if db.Error != nil {
 			log.Errorf("MsgID[%s] Update error: %s", msgID, err)
 			response.Error(c, 500, err, "更新失败")

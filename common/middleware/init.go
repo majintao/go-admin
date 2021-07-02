@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-admin-team/go-admin-core/sdk"
 	jwt "github.com/go-admin-team/go-admin-core/sdk/pkg/jwtauth"
-	"go-admin/common/actions"
 )
 
 const (
@@ -31,5 +30,4 @@ func InitMiddleware(r *gin.Engine) {
 	//r.Use(middleware.Trace())
 	sdk.Runtime.SetMiddleware(JwtTokenCheck, (*jwt.GinJWTMiddleware).MiddlewareFunc)
 	sdk.Runtime.SetMiddleware(RoleCheck, AuthCheckRole())
-	sdk.Runtime.SetMiddleware(PermissionCheck, actions.PermissionAction())
 }

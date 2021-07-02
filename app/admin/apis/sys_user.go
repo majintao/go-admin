@@ -2,6 +2,7 @@ package apis
 
 import (
 	"github.com/gin-gonic/gin/binding"
+	"github.com/go-admin-team/go-admin-core/tools/utils"
 	"go-admin/app/admin/models"
 	"net/http"
 
@@ -13,7 +14,6 @@ import (
 
 	"go-admin/app/admin/service"
 	"go-admin/app/admin/service/dto"
-	"go-admin/common/actions"
 )
 
 type SysUser struct {
@@ -43,12 +43,10 @@ func (e SysUser) GetPage(c *gin.Context) {
 	}
 
 	//数据权限检查
-	p := actions.GetPermissionFromContext(c)
-
 	list := make([]models.SysUser, 0)
 	var count int64
 
-	err = s.GetPage(&req, p, &list, &count)
+	err = s.GetPage(&req, &list, &count)
 	if err != nil {
 		e.Error(500, err, "查询失败")
 		return
@@ -80,8 +78,7 @@ func (e SysUser) Get(c *gin.Context) {
 	}
 	var object models.SysUser
 	//数据权限检查
-	p := actions.GetPermissionFromContext(c)
-	err = s.Get(&req, p, &object)
+	err = s.Get(&req, &object)
 	if err != nil {
 		e.Error(http.StatusUnprocessableEntity, err, "查询失败")
 		return
@@ -150,10 +147,7 @@ func (e SysUser) Update(c *gin.Context) {
 
 	req.SetUpdateBy(user.GetUserId(c))
 
-	//数据权限检查
-	p := actions.GetPermissionFromContext(c)
-
-	err = s.Update(&req, p)
+	err = s.Update(&req)
 	if err != nil {
 		e.Logger.Error(err)
 		return
@@ -186,10 +180,7 @@ func (e SysUser) Delete(c *gin.Context) {
 	// 设置编辑人
 	req.SetUpdateBy(user.GetUserId(c))
 
-	// 数据权限检查
-	p := actions.GetPermissionFromContext(c)
-
-	err = s.Remove(&req, p)
+	err = s.Remove(&req)
 	if err != nil {
 		e.Logger.Error(err)
 		return
@@ -218,8 +209,6 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 		e.Error(500, err, err.Error())
 		return
 	}
-	// 数据权限检查
-	p := actions.GetPermissionFromContext(c)
 	form, _ := c.MultipartForm()
 	files := form.File["upload[]"]
 	guid := uuid.New().String()
@@ -234,10 +223,10 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 			return
 		}
 	}
-	req.UserId = p.UserId
+	req.UserId = user.GetUserId(c)
 	req.Avatar = "/" + filPath
 
-	err = s.Update(&req, p)
+	err = s.Update(&req)
 	if err != nil {
 		e.Logger.Error(err)
 		return
@@ -271,10 +260,7 @@ func (e SysUser) UpdateStatus(c *gin.Context) {
 
 	req.SetUpdateBy(user.GetUserId(c))
 
-	//数据权限检查
-	p := actions.GetPermissionFromContext(c)
-
-	err = s.UpdateSysUserStatus(&req, p)
+	err = s.UpdateSysUserStatus(&req)
 	if err != nil {
 		e.Logger.Error(err)
 		return
@@ -308,10 +294,7 @@ func (e SysUser) ResetPwd(c *gin.Context) {
 
 	req.SetUpdateBy(user.GetUserId(c))
 
-	//数据权限检查
-	p := actions.GetPermissionFromContext(c)
-
-	err = s.ResetSysUserPwd(&req, p)
+	err = s.ResetSysUserPwd(&req)
 	if err != nil {
 		e.Logger.Error(err)
 		return
@@ -343,10 +326,7 @@ func (e SysUser) UpdatePwd(c *gin.Context) {
 		return
 	}
 
-	// 数据权限检查
-	p := actions.GetPermissionFromContext(c)
-
-	err = s.UpdateSysUserPwd(user.GetUserId(c), req.OldPassword, req.NewPassword, p)
+	err = s.UpdateSysUserPwd(user.GetUserId(c), req.OldPassword, req.NewPassword)
 	if err != nil {
 		e.Logger.Error(err)
 		e.Error(http.StatusForbidden, err, "密码修改失败")
@@ -414,9 +394,7 @@ func (e SysUser) GetInfo(c *gin.Context) {
 		e.Error(500, err, err.Error())
 		return
 	}
-	p := actions.GetPermissionFromContext(c)
-	var roles = make([]string, 1)
-	roles[0] = user.GetRoleName(c)
+	var roles = user.GetRoleKeys(c)
 	var permissions = make([]string, 1)
 	permissions[0] = "*:*:*"
 	var buttons = make([]string, 1)
@@ -424,17 +402,17 @@ func (e SysUser) GetInfo(c *gin.Context) {
 
 	var mp = make(map[string]interface{})
 	mp["roles"] = roles
-	if user.GetRoleName(c) == "admin" || user.GetRoleName(c) == "系统管理员" {
+	if utils.Contains(user.GetRoleKeys(c), "admin") {
 		mp["permissions"] = permissions
 		mp["buttons"] = buttons
 	} else {
-		list, _ := r.GetById(user.GetRoleId(c))
+		list, _ := r.GetPermissionsByRoleIds(user.GetRoleIds(c))
 		mp["permissions"] = list
 		mp["buttons"] = list
 	}
 	sysUser := models.SysUser{}
 	req.Id = user.GetUserId(c)
-	err = s.Get(&req, p, &sysUser)
+	err = s.Get(&req, &sysUser)
 	if err != nil {
 		e.Error(http.StatusUnauthorized, err, "登录失败")
 		return

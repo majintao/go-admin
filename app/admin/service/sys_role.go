@@ -291,3 +291,27 @@ func (e *SysRole) GetById(roleId int) ([]string, error) {
 	}
 	return permissions, nil
 }
+
+func (e *SysRole) GetPermissionsByRoleIds(roleIds []int) ([]string, error) {
+	permissions := make([]string, 0)
+	roles := []models.SysRole{}
+	if err := e.Orm.Preload("SysMenu").Where("role_id in ?", roleIds).First(&roles).Error; err != nil {
+		return nil, err
+	}
+
+	pm := make(map[string]int)
+	for _, role := range roles {
+		for _, m := range *role.SysMenu {
+			for _, api := range m.SysApi {
+				pm[api.Action] = 1
+			}
+		}
+	}
+
+	// 获取去重后的数据
+	for s, _ := range pm {
+		permissions = append(permissions, s)
+	}
+
+	return permissions, nil
+}

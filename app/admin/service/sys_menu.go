@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/go-admin-team/go-admin-core/tools/utils"
 
 	"github.com/go-admin-team/go-admin-core/sdk/pkg"
 	"gorm.io/gorm"
@@ -308,8 +309,8 @@ func menuCall(menuList *[]models.SysMenu, menu models.SysMenu) models.SysMenu {
 }
 
 // SetMenuRole 获取左侧菜单树使用
-func (e *SysMenu) SetMenuRole(roleName string) (m []models.SysMenu, err error) {
-	menus, err := e.getByRoleName(roleName)
+func (e *SysMenu) SetMenuRole(roleKeys []string) (m []models.SysMenu, err error) {
+	menus, err := e.getByRoleKeys(roleKeys)
 	m = make([]models.SysMenu, 0)
 	for i := 0; i < len(menus); i++ {
 		if menus[i].ParentId != 0 {
@@ -321,23 +322,34 @@ func (e *SysMenu) SetMenuRole(roleName string) (m []models.SysMenu, err error) {
 	return
 }
 
-func (e *SysMenu) getByRoleName(roleName string) ([]models.SysMenu, error) {
+func (e *SysMenu) getByRoleKeys(roleKeys []string) ([]models.SysMenu, error) {
 	var MenuList []models.SysMenu
-	var role models.SysRole
 	var err error
 
-	if roleName == "admin" {
+	if utils.Contains(roleKeys, "admin") { // 管理员全部权限
 		var data []models.SysMenu
 		err = e.Orm.Where(" menu_type in ('M','C')").Order("sort").Find(&data).Error
 		MenuList = data
 	} else {
-		role.RoleKey = roleName
-		err = e.Orm.Debug().Model(&role).Where("role_key = ? ", roleName).Preload("SysMenu", func(db *gorm.DB) *gorm.DB {
-			return db.Where(" menu_type in ('M','C')").Order("sort")
-		}).Find(&role).Error
-		if role.SysMenu != nil {
-			MenuList = *role.SysMenu
+		// 获取角色
+		var role []models.SysRole
+		err := e.Orm.Debug().Model(&models.SysRole{}).Where("role_key in ? ", roleKeys).Find(&role).Error
+		if err != nil {
+			e.Log.Errorf("db error:%s", err)
+			return nil, err
 		}
+
+		roleIds := make([]int, 0, len(roleKeys))
+		for _, sysRole := range role {
+			roleIds = append(roleIds, sysRole.RoleId)
+		}
+		// 获取角色对应的菜单id列表
+		mids := make([]int, 0, 0)
+		e.Orm.Raw("SELECT DISTINCT(m.menu_id) FROM sys_role_menu rm left join sys_menu m on rm.menu_id = m.menu_id "+
+			"WHERE rm.role_id in (4)  and  m.menu_type in ('M','C') order by sort;", roleIds).Scan(&mids)
+
+		// 获取角色对应的菜单
+		e.Orm.Debug().Model(&models.SysMenu{}).Where("menu_id in ?", mids).Find(&MenuList)
 	}
 
 	if err != nil {

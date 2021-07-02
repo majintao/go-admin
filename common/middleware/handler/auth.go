@@ -2,21 +2,19 @@ package handler
 
 import (
 	"fmt"
-	"go-admin/app/admin/models"
-	"go-admin/common"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-admin-team/go-admin-core/sdk"
 	"github.com/go-admin-team/go-admin-core/sdk/api"
 	"github.com/go-admin-team/go-admin-core/sdk/config"
 	"github.com/go-admin-team/go-admin-core/sdk/pkg"
-	"github.com/go-admin-team/go-admin-core/sdk/pkg/captcha"
 	jwt "github.com/go-admin-team/go-admin-core/sdk/pkg/jwtauth"
 	"github.com/go-admin-team/go-admin-core/sdk/pkg/jwtauth/user"
 	"github.com/go-admin-team/go-admin-core/sdk/pkg/response"
 	"github.com/mssola/user_agent"
+	"go-admin/app/admin/models"
+	"go-admin/common"
 	gaConfig "go-admin/config"
+	"net/http"
 
 	"go-admin/common/global"
 )
@@ -24,28 +22,36 @@ import (
 func PayloadFunc(data interface{}) jwt.MapClaims {
 	if v, ok := data.(map[string]interface{}); ok {
 		u, _ := v["user"].(SysUser)
-		r, _ := v["role"].(SysRole)
+		r, _ := v["role"].([]*SysRole)
+		roleKeys, roleIds := getRoleInfoArray(r)
 		return jwt.MapClaims{
-			jwt.IdentityKey:  u.UserId,
-			jwt.RoleIdKey:    r.RoleId,
-			jwt.RoleKey:      r.RoleKey,
-			jwt.NiceKey:      u.Username,
-			jwt.DataScopeKey: r.DataScope,
-			jwt.RoleNameKey:  r.RoleName,
+			jwt.IdentityKey: u.UserId,
+			jwt.RoleKeys:    roleKeys,
+			jwt.RoleIds:     roleIds,
+			jwt.NiceKey:     u.Username,
+			//jwt.RoleNameKey:  r.RoleName,
 		}
 	}
 	return jwt.MapClaims{}
 }
 
+func getRoleInfoArray(sysRoles []*SysRole) (roleKeys []string, roleIds []int) {
+	roleKeys = make([]string, 0, 0)
+	roleIds = make([]int, 0, 0)
+	for _, role := range sysRoles {
+		roleKeys = append(roleKeys, role.RoleKey)
+		roleIds = append(roleIds, role.RoleId)
+	}
+	return
+}
+
 func IdentityHandler(c *gin.Context) interface{} {
 	claims := jwt.ExtractClaims(c)
 	return map[string]interface{}{
-		"IdentityKey": claims["identity"],
-		"UserName":    claims["nice"],
-		"RoleKey":     claims["rolekey"],
-		"UserId":      claims["identity"],
-		"RoleIds":     claims["roleid"],
-		"DataScope":   claims["datascope"],
+		"IdentityKey": claims[jwt.IdentityKey],
+		"UserName":    claims[jwt.NiceKey],
+		"RoleKey":     claims[jwt.RoleKeys],
+		"UserId":      claims[jwt.IdentityKey],
 	}
 }
 
@@ -87,20 +93,20 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 
 		return nil, jwt.ErrMissingLoginValues
 	}
-	if config.ApplicationConfig.Mode != "dev" {
-		if !captcha.Verify(loginVals.UUID, loginVals.Code, true) {
-			username = loginVals.Username
-			msg = "验证码错误"
-			status = "1"
-
-			return nil, jwt.ErrInvalidVerificationode
-		}
-	}
-	user, role, e := loginVals.GetUser(db)
+	//if config.ApplicationConfig.Mode != "dev" {
+	//	if !captcha.Verify(loginVals.UUID, loginVals.Code, true) {
+	//		username = loginVals.Username
+	//		msg = "验证码错误"
+	//		status = "1"
+	//
+	//		return nil, jwt.ErrInvalidVerificationode
+	//	}
+	//}
+	user, roles, e := loginVals.GetUser(db)
 	if e == nil {
 		username = loginVals.Username
 
-		return map[string]interface{}{"user": user, "role": role}, nil
+		return map[string]interface{}{"user": user, "roles": roles}, nil
 	} else {
 		msg = "登录失败"
 		status = "1"
@@ -120,7 +126,7 @@ func LoginLogToDB(c *gin.Context, status string, msg string, username string) {
 	ua := user_agent.New(c.Request.UserAgent())
 	l["ipaddr"] = common.GetClientIP(c)
 	fmt.Println("gaConfig.ExtConfig.AMap.Key", gaConfig.ExtConfig.AMap.Key)
-	l["loginLocation"] = pkg.GetLocation(common.GetClientIP(c),gaConfig.ExtConfig.AMap.Key)
+	l["loginLocation"] = pkg.GetLocation(common.GetClientIP(c), gaConfig.ExtConfig.AMap.Key)
 	l["loginTime"] = pkg.GetCurrentTime()
 	l["status"] = status
 	l["remark"] = c.Request.UserAgent()
@@ -167,12 +173,15 @@ func Authorizator(data interface{}, c *gin.Context) bool {
 
 	if v, ok := data.(map[string]interface{}); ok {
 		u, _ := v["user"].(models.SysUser)
-		r, _ := v["role"].(models.SysRole)
-		c.Set("role", r.RoleName)
-		c.Set("roleIds", r.RoleId)
+		r, _ := v["roles"].([]*SysRole)
+
+		roleKeys := make([]string, 0, len(r))
+		for _, role := range r {
+			roleKeys = append(roleKeys, role.RoleKey)
+		}
+		c.Set("roleKeys", roleKeys)
 		c.Set("userId", u.UserId)
 		c.Set("userName", u.Username)
-		c.Set("dataScope", r.DataScope)
 		return true
 	}
 	return false

@@ -45,12 +45,7 @@ func ViewAction(control dto.Control, f func() interface{}) gin.HandlerFunc {
 			rsp, _ = req.GenerateM()
 		}
 
-		//数据权限检查
-		p := GetPermissionFromContext(c)
-
-		err = db.Model(object).WithContext(c).Scopes(
-			Permission(object.TableName(), p),
-		).Where(req.GetId()).First(rsp).Error
+		err = db.Model(object).WithContext(c).Where(req.GetId()).First(rsp).Error
 
 		if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 			response.Error(c, http.StatusNotFound, nil, "查看对象不存在或无权查看")

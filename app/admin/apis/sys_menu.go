@@ -193,7 +193,7 @@ func (e SysMenu) GetMenuRole(c *gin.Context) {
 		return
 	}
 
-	result, err := s.SetMenuRole(user.GetRoleName(c))
+	result, err := s.SetMenuRole(user.GetRoleKeys(c))
 
 	if err != nil {
 		e.Error(500, err, "查询失败")

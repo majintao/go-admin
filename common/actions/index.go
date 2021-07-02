@@ -36,14 +36,10 @@ func IndexAction(m models.ActiveRecord, d dto.Index, f func() interface{}) gin.H
 			return
 		}
 
-		//数据权限检查
-		p := GetPermissionFromContext(c)
-
 		err = db.WithContext(c).Model(object).
 			Scopes(
 				dto.MakeCondition(req.GetNeedSearch()),
 				dto.Paginate(req.GetPageSize(), req.GetPageIndex()),
-				Permission(object.TableName(), p),
 			).
 			Find(list).Limit(-1).Offset(-1).
 			Count(&count).Error
