@@ -22,7 +22,7 @@ import (
 func PayloadFunc(data interface{}) jwt.MapClaims {
 	if v, ok := data.(map[string]interface{}); ok {
 		u, _ := v["user"].(SysUser)
-		r, _ := v["role"].([]*SysRole)
+		r, _ := v["roles"].([]*SysRole)
 		roleKeys, roleIds := getRoleInfoArray(r)
 		return jwt.MapClaims{
 			jwt.IdentityKey: u.UserId,
