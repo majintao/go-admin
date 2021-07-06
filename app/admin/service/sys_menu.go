@@ -346,10 +346,10 @@ func (e *SysMenu) getByRoleKeys(roleKeys []string) ([]models.SysMenu, error) {
 		// 获取角色对应的菜单id列表
 		mids := make([]int, 0, 0)
 		e.Orm.Raw("SELECT DISTINCT(m.menu_id) FROM sys_role_menu rm left join sys_menu m on rm.menu_id = m.menu_id "+
-			"WHERE rm.role_id in (4)  and  m.menu_type in ('M','C') order by sort;", roleIds).Scan(&mids)
+			"WHERE rm.role_id in (?)  and  m.menu_type in ('M','C')", roleIds).Scan(&mids)
 
 		// 获取角色对应的菜单
-		e.Orm.Debug().Model(&models.SysMenu{}).Where("menu_id in ?", mids).Find(&MenuList)
+		e.Orm.Debug().Model(&models.SysMenu{}).Where("menu_id in ?", mids).Order("sort").Find(&MenuList)
 	}
 
 	if err != nil {

@@ -39,7 +39,7 @@ func (e *SysUser) GetPage(c *dto.SysUserGetPageReq, list *[]models.SysUser, coun
 func (e *SysUser) Get(d *dto.SysUserById, model *models.SysUser) error {
 	var data models.SysUser
 
-	err := e.Orm.Model(&data).Debug().
+	err := e.Orm.Model(&data).Debug().Preload("Roles").
 		First(model, d.GetId()).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		err = errors.New("查看对象不存在或无权查看")

@@ -91,6 +91,7 @@ func (e *SysRole) Insert(c *dto.SysRoleControl, cb *casbin.SyncedEnforcer) error
 			_, err = cb.AddNamedPolicy("p", data.RoleKey, api.Path, api.Action)
 		}
 	}
+
 	_ = cb.SavePolicy()
 	//if len(c.MenuIds) > 0 {
 	//	s := SysRoleMenu{}
@@ -148,6 +149,7 @@ func (e *SysRole) Update(c *dto.SysRoleControl, cb *casbin.SyncedEnforcer) error
 			_, err = cb.AddNamedPolicy("p", model.RoleKey, api.Path, api.Action)
 		}
 	}
+
 	_ = cb.SavePolicy()
 	return nil
 }
@@ -302,9 +304,7 @@ func (e *SysRole) GetPermissionsByRoleIds(roleIds []int) ([]string, error) {
 	pm := make(map[string]int)
 	for _, role := range roles {
 		for _, m := range *role.SysMenu {
-			for _, api := range m.SysApi {
-				pm[api.Action] = 1
-			}
+			pm[m.Permission] = 1
 		}
 	}
 

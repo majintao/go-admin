@@ -65,6 +65,10 @@ func (e *SysUser) BeforeCreate(_ *gorm.DB) error {
 
 func (e *SysUser) BeforeUpdate(_ *gorm.DB) error {
 	var err error
+	e.RoleIds = make([]int, 0, len(e.Roles))
+	for _, role := range e.Roles {
+		e.RoleIds = append(e.RoleIds, role.RoleId)
+	}
 	if e.Password != "" {
 		err = e.Encrypt()
 	}

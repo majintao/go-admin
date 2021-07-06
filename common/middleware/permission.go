@@ -38,11 +38,19 @@ func AuthCheckRole() gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		res, err = e.Enforce(v["rolekey"], c.Request.URL.Path, c.Request.Method)
-		if err != nil {
-			log.Errorf("AuthCheckRole error:%s method:%s path:%s", err, c.Request.Method, c.Request.URL.Path)
-			response.Error(c, 500, err, "")
-			return
+
+		// 判断多个权限
+		res = false
+		for _, roleKey := range utils.ExtractStrArrFromInterface(v["roleKeys"]) {
+			res, err = e.Enforce(roleKey, c.Request.URL.Path, c.Request.Method)
+			if err != nil {
+				log.Errorf("AuthCheckRole error:%s method:%s path:%s", err, c.Request.Method, c.Request.URL.Path)
+				response.Error(c, 500, err, "")
+				return
+			}
+			if res {
+				break
+			}
 		}
 
 		if res {
