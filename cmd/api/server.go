@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"go-admin/common/grpc"
 	"log"
 	"net/http"
 	"os"
@@ -63,6 +64,7 @@ func setup() {
 	config.Setup(
 		file.NewSource(file.WithPath(configYml)),
 		database.Setup,
+		grpc.Setup,
 		storage.Setup,
 	)
 	//注册监听函数
