@@ -84,3 +84,6 @@ settings:
         balancerName: round_robin # 默认值,grpc客户端调用服务端采用的 轮训模式
         block: false # 默认值
         dialTimeout: 0 # 默认值
+  mongo:
+    video:
+      dsn: "mongodb://hw-sg-nono-test2.livenono.com:27103/video"

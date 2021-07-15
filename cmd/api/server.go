@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"go-admin/app/rpc"
 	"go-admin/common/grpc"
 	"log"
 	"net/http"
@@ -73,6 +74,9 @@ func setup() {
 	queue.Register(global.OperateLog, models.SaveOperaLog)
 	queue.Register(global.ApiCheck, models.SaveSysApi)
 	go queue.Run()
+
+	//注册grpc客户端
+	rpc.Init()
 
 	usageStr := `starting api server...`
 	log.Println(usageStr)

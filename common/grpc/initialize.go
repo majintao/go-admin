@@ -21,4 +21,5 @@ func Setup() {
 
 	// 植入grpc client配置
 	sdk.Runtime.SetGrpcClients(grpcConfig.Clients)
+
 }

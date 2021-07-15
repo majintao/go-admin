@@ -15,9 +15,9 @@ func videoCheckRoleRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddlew
 	{
 		video := apis.Video{}
 		r.POST("/applyUpload", video.ApplyUpload)
-		//r.GET("/listVideos", gen.GenCode)
-		//r.GET("/getVideo", gen.GenApiToFile)
-		//r.GET("/updateVideoStatus", gen.GenMenuAndApi)
-		//r.GET("addOrUpdateVideo", sysTable.GetSysTablesTree)
+		r.GET("/listVideos", video.ListVideos)
+		r.GET("/getVideo", video.GetVideo)
+		r.GET("/updateVideoStatus", video.UpdateVideoStatus)
+		r.GET("/addOrUpdateVideo", video.AddOrUpdateVideo)
 	}
 }
