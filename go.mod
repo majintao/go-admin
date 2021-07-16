@@ -3,7 +3,7 @@ module go-admin
 go 1.15
 
 require (
-	git.nonolive.co/FE/mildom-video v0.0.0-20210715063108-03a812144f77 // indirect
+	git.nonolive.co/FE/mildom-video v0.0.0-20210716021057-32a15f8b9446 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alibaba/sentinel-golang v0.6.1
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5
@@ -30,6 +30,7 @@ require (
 	go.mongodb.org/mongo-driver v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
+	google.golang.org/grpc v1.31.0 // indirect
 	gorm.io/driver/mysql v1.0.4-0.20201206014609-ae5fd10184f6
 	gorm.io/driver/postgres v1.0.6-0.20201208020313-1ed927cfab53
 	gorm.io/driver/sqlite v1.1.5-0.20201206014648-c84401fbe3ba

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var MildomVideoServiceClient mildomapi.MildomVideoServiceClient
+var MildomVideoCmsServiceClient mildomapi.MildomVideoCmsServiceClient
 
 func Init() error {
 	client := sdk.Runtime.GetGrpcClients()["mildomVideo"]
@@ -17,6 +17,7 @@ func Init() error {
 	config.DialTimeout = time.Duration(client.DialTimeout) * time.Second
 	config.BalancerName = client.BalancerName
 
-	MildomVideoServiceClient = mildomapi.NewMildomVideoServiceClient(config.Build())
+	MildomVideoCmsServiceClient = mildomapi.NewMildomVideoCmsServiceClient(config.Build())
+
 	return nil
 }

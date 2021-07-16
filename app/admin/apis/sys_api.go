@@ -89,7 +89,7 @@ func (e SysApi) Get(c *gin.Context) {
 // @Tags 接口管理
 // @Accept application/json
 // @Product application/json
-// @Param data body dto.SysApiControl true "body"
+// @Param data body dto.SysApiUpdateReq true "body"
 // @Success 200 {object} response.Response	"{"code": 200, "message": "修改成功"}"
 // @Router /api/v1/sys-api/{id} [put]
 // @Security Bearer

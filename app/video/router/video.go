@@ -11,13 +11,14 @@ func init() {
 }
 
 func videoCheckRoleRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
-	r := v1.Group("/video").Use(authMiddleware.MiddlewareFunc())
+	//r := v1.Group("/video").Use(authMiddleware.MiddlewareFunc())  // 开启权限校验
+	r := v1.Group("/video")
 	{
 		video := apis.Video{}
 		r.POST("/applyUpload", video.ApplyUpload)
-		r.GET("/listVideos", video.ListVideos)
-		r.GET("/getVideo", video.GetVideo)
-		r.GET("/updateVideoStatus", video.UpdateVideoStatus)
-		r.GET("/addOrUpdateVideo", video.AddOrUpdateVideo)
+		r.POST("/listVideos", video.ListVideos)
+		r.POST("/getVideo", video.GetVideo)
+		r.POST("/updateVideoStatus", video.UpdateVideoStatus)
+		r.POST("/addOrUpdateVideo", video.AddOrUpdateVideo)
 	}
 }

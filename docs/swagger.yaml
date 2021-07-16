@@ -1,9 +1,79 @@
 definitions:
+  cms.ListVideosReqDto:
+    properties:
+      origin:
+        type: integer
+      page_num:
+        type: integer
+      page_size:
+        type: integer
+      status:
+        type: integer
+      upload_end_time:
+        type: integer
+      upload_start_time:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  cms.UpdateStatusReqDto:
+    properties:
+      id:
+        type: string
+      status:
+        type: integer
+    type: object
+  cms.VideoDto:
+    properties:
+      channel:
+        description: 发布频道 （1：全部频道）
+        type: integer
+      cover:
+        description: 封面
+        type: string
+      id:
+        description: 作为唯一ID，mgo自动生成
+        type: string
+      origin:
+        description: 视频来源 （1：本地上传 2：用户上传 3：剪辑视频）
+        type: integer
+      publish_time:
+        description: 发布时间
+        type: string
+      remark:
+        description: 视频描述
+        type: string
+      status:
+        description: 状态（1：上架  -1：下架 2:封禁）
+        type: integer
+      title:
+        description: 标题
+        type: string
+      upload_time:
+        description: 上传时间
+        type: string
+      user_id:
+        description: 用户id
+        type: integer
+      user_tags:
+        description: 用户视频标签
+        items:
+          type: string
+        type: array
+      video_id:
+        description: 视频id(关联中台记录)
+        type: string
+    type: object
   dto.GetSetSysConfigReq:
     properties:
       configKey:
         type: string
       configValue:
+        type: string
+    type: object
+  dto.GetVideoDto:
+    properties:
+      id:
         type: string
     type: object
   dto.PassWord:
@@ -45,7 +115,7 @@ definitions:
     - dataScope
     - roleId
     type: object
-  dto.SysApiControl:
+  dto.SysApiUpdateReq:
     properties:
       action:
         type: string
@@ -418,8 +488,10 @@ definitions:
         type: integer
       remark:
         type: string
-      roleId:
-        type: integer
+      roleIds:
+        items:
+          type: integer
+        type: array
       sex:
         type: string
       status:
@@ -470,19 +542,13 @@ definitions:
     type: object
   handler.Login:
     properties:
-      code:
-        type: string
       password:
         type: string
       username:
         type: string
-      uuid:
-        type: string
     required:
-    - code
     - password
     - username
-    - uuid
     type: object
   models.SysApi:
     properties:
@@ -1854,7 +1920,6 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
-      summary: 删除接口管理
       tags:
       - 接口管理
     get:
@@ -1939,7 +2004,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/dto.SysApiControl'
+          $ref: '#/definitions/dto.SysApiUpdateReq'
       responses:
         "200":
           description: '{"code": 200, "message": "修改成功"}'
@@ -2540,6 +2605,107 @@ paths:
       summary: 修改用户状态
       tags:
       - 用户
+  /api/v1/video/AddOrUpdateVideo:
+    post:
+      consumes:
+      - application/json
+      description: 新增或者修改视频
+      parameters:
+      - description: 用户数据
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/cms.VideoDto'
+      responses:
+        "200":
+          description: '{"code": 200, "data": [...]}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 新增或者修改视频
+      tags:
+      - 视频
+  /api/v1/video/applyUpload:
+    post:
+      description: 后台获取申请上传的凭证
+      responses:
+        "200":
+          description: '{"code": 200, "data": [...]}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 申请上传凭证
+      tags:
+      - 视频
+  /api/v1/video/getVideo:
+    post:
+      consumes:
+      - application/json
+      description: 根据视频id获取视频信息
+      parameters:
+      - description: 获取视频信息查询id
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GetVideoDto'
+      responses:
+        "200":
+          description: '{"code": 200, "data": [...]}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 根据视频id获取视频信息
+      tags:
+      - 视频
+  /api/v1/video/listVideos:
+    post:
+      consumes:
+      - application/json
+      description: 根据条件查询获取视频列表
+      parameters:
+      - description: 视频列表选择参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/cms.ListVideosReqDto'
+      responses:
+        "200":
+          description: '{"code": 200, "data": [...]}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 根据条件查询视频列表
+      tags:
+      - 视频
+  /api/v1/video/updateVideoStatus:
+    post:
+      consumes:
+      - application/json
+      description: 根据视频id更新视频状态
+      parameters:
+      - description: 更新视频状态请求
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/cms.UpdateStatusReqDto'
+      responses:
+        "200":
+          description: '{"code": 200, "data": [...]}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 根据视频id更新视频状态
+      tags:
+      - 视频
   /logout:
     post:
       consumes:

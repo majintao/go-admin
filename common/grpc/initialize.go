@@ -16,7 +16,7 @@ func Setup() {
 	config.ConnectTimeout = time.Duration(grpcConfig.Registry.ConnectTimeout) * time.Second
 	config.Endpoints = grpcConfig.Registry.Endpoints
 	config.Secure = grpcConfig.Registry.Secure
-	config.Prefix = grpcConfig.Registry.Prefix
+	//config.Prefix = grpcConfig.Registry.Prefix
 	resolver.Register("etcd", config.Build())
 
 	// 植入grpc client配置

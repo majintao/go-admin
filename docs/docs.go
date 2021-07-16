@@ -1712,7 +1712,6 @@ var doc = `{
                 "tags": [
                     "接口管理"
                 ],
-                "summary": "删除接口管理",
                 "parameters": [
                     {
                         "description": "ids",
@@ -1798,7 +1797,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.SysApiControl"
+                            "$ref": "#/definitions/dto.SysApiUpdateReq"
                         }
                     }
                 ],
@@ -2777,6 +2776,172 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/AddOrUpdateVideo": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "新增或者修改视频",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频"
+                ],
+                "summary": "新增或者修改视频",
+                "parameters": [
+                    {
+                        "description": "用户数据",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cms.VideoDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/applyUpload": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "后台获取申请上传的凭证",
+                "tags": [
+                    "视频"
+                ],
+                "summary": "申请上传凭证",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/getVideo": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据视频id获取视频信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频"
+                ],
+                "summary": "根据视频id获取视频信息",
+                "parameters": [
+                    {
+                        "description": "获取视频信息查询id",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetVideoDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/listVideos": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据条件查询获取视频列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频"
+                ],
+                "summary": "根据条件查询视频列表",
+                "parameters": [
+                    {
+                        "description": "视频列表选择参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cms.ListVideosReqDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/updateVideoStatus": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据视频id更新视频状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频"
+                ],
+                "summary": "根据视频id更新视频状态",
+                "parameters": [
+                    {
+                        "description": "更新视频状态请求",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cms.UpdateStatusReqDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/logout": {
             "post": {
                 "security": [
@@ -2801,6 +2966,99 @@ var doc = `{
         }
     },
     "definitions": {
+        "cms.ListVideosReqDto": {
+            "type": "object",
+            "properties": {
+                "origin": {
+                    "type": "integer"
+                },
+                "page_num": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "upload_end_time": {
+                    "type": "integer"
+                },
+                "upload_start_time": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "cms.UpdateStatusReqDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "cms.VideoDto": {
+            "type": "object",
+            "properties": {
+                "channel": {
+                    "description": "发布频道 （1：全部频道）",
+                    "type": "integer"
+                },
+                "cover": {
+                    "description": "封面",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "作为唯一ID，mgo自动生成",
+                    "type": "string"
+                },
+                "origin": {
+                    "description": "视频来源 （1：本地上传 2：用户上传 3：剪辑视频）",
+                    "type": "integer"
+                },
+                "publish_time": {
+                    "description": "发布时间",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "视频描述",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态（1：上架  -1：下架 2:封禁）",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
+                },
+                "upload_time": {
+                    "description": "上传时间",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "用户id",
+                    "type": "integer"
+                },
+                "user_tags": {
+                    "description": "用户视频标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "video_id": {
+                    "description": "视频id(关联中台记录)",
+                    "type": "string"
+                }
+            }
+        },
         "dto.GetSetSysConfigReq": {
             "type": "object",
             "properties": {
@@ -2808,6 +3066,14 @@ var doc = `{
                     "type": "string"
                 },
                 "configValue": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GetVideoDto": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "string"
                 }
             }
@@ -2870,7 +3136,7 @@ var doc = `{
                 }
             }
         },
-        "dto.SysApiControl": {
+        "dto.SysApiUpdateReq": {
             "type": "object",
             "properties": {
                 "action": {
@@ -3429,8 +3695,11 @@ var doc = `{
                 "remark": {
                     "type": "string"
                 },
-                "roleId": {
-                    "type": "integer"
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "sex": {
                     "type": "string"
@@ -3495,22 +3764,14 @@ var doc = `{
         "handler.Login": {
             "type": "object",
             "required": [
-                "code",
                 "password",
-                "username",
-                "uuid"
+                "username"
             ],
             "properties": {
-                "code": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
                 },
                 "username": {
-                    "type": "string"
-                },
-                "uuid": {
                     "type": "string"
                 }
             }
