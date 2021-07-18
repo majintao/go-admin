@@ -34,8 +34,11 @@ func (v Video) ApplyUpload(c *gin.Context) {
 		return
 	}
 
+	uploadParams := make(map[string]interface{})
+	json.Unmarshal(upload.UploadParams, &uploadParams)
+
 	result := make(map[string]interface{})
-	json.Unmarshal(upload.UploadParams, &result)
+	result["upload_params"] = uploadParams
 	v.OK(result, "申请成功")
 }
 
@@ -98,10 +101,13 @@ func (v Video) GetVideo(c *gin.Context) {
 		return
 	}
 
-	dto := cms.ListVideosRespDto{}
+	dto := cms.VideoDto{}
 	json.Unmarshal(resp.Results, &dto)
 
-	v.OK(dto, "请求成功")
+	result := make(map[string]interface{})
+	result["video"] = dto
+
+	v.OK(result, "请求成功")
 }
 
 // UpdateVideoStatus
@@ -144,12 +150,12 @@ func (v Video) UpdateVideoStatus(c *gin.Context) {
 // @Tags 视频
 // @Accept  application/json
 // @Product application/json
-// @Param data body cms.VideoDto true "用户数据"
+// @Param data body cms.SaveOrUpdateVideoDto true "用户数据"
 // @Success 200 {string} {object} response.Response "{"code": 200, "data": [...]}"
 // @Router /api/v1/video/addOrUpdateVideo [post]
 // @Security Bearer
 func (v Video) AddOrUpdateVideo(c *gin.Context) {
-	videoDto := cms.VideoDto{}
+	videoDto := cms.SaveOrUpdateVideoDto{}
 	v.MakeContext(c).Bind(&videoDto)
 
 	marshal, _ := json.Marshal(videoDto)
