@@ -73,17 +73,17 @@ settings:
     redis:
   grpc:
     registry:
-      connectTimeout: 1
+      connectTimeout: 10
       endpoints:
-        - "hw-sg-nono-test2.livenono.com:2379"
+        - "sg-web1.livenono.com:2379"
       secure: false
-      prefix: "mildom"
+      prefix: ""
     clients:
       mildomVideo: ## 这里置入不同的客户端配置
-        address: "etcd:///main" #etcd:/// 默认前缀， main 指的是应用执行二进制文件名称(发布平台将它默认为应用名称). 框架内部会把 main解析出来跟前缀做拼接，去etcd找到对应grpc服务端注册key
+        address: "etcd:///mildom-video-service" #etcd:/// 默认前缀， main 指的是应用执行二进制文件名称(发布平台将它默认为应用名称). 框架内部会把 main解析出来跟前缀做拼接，去etcd找到对应grpc服务端注册key
         balancerName: round_robin # 默认值,grpc客户端调用服务端采用的 轮训模式
         block: false # 默认值
-        dialTimeout: 0 # 默认值
+        dialTimeout: 10 # 默认值
   mongo:
     video:
       dsn: "mongodb://hw-sg-nono-test2.livenono.com:27103/video"
