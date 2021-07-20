@@ -75,7 +75,7 @@ settings:
     registry:
       connectTimeout: 10
       endpoints:
-        - "sg-web1.livenono.com:2379"
+        - "hw-sg-nono-test1.livenono.com:2379"
       secure: false
       prefix: ""
     clients:

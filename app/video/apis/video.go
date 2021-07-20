@@ -189,8 +189,8 @@ func (v Video) AddOrUpdateVideo(c *gin.Context) {
 
 }
 
-
 func (v Video) ListAllTags(c *gin.Context) {
+	v.MakeContext(c)
 	resp, err := rpc.MildomVideoCmsServiceClient.ListAllTags(context.Background(), &mildomapi.ListAllTagsReq{})
 	if err != nil {
 		return
@@ -200,5 +200,6 @@ func (v Video) ListAllTags(c *gin.Context) {
 	json.Unmarshal(resp.Results, &tagsResp)
 
 	v.OK(tagsResp, "请求成功")
+	return
 
 }
