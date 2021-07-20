@@ -3,7 +3,7 @@ module go-admin
 go 1.15
 
 require (
-	git.nonolive.co/FE/mildom-video v0.0.0-20210719113738-de7308501064 // indirect
+	git.nonolive.co/FE/mildom-video v0.0.0-20210720082624-578f2160f18e // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alibaba/sentinel-golang v0.6.1
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5
