@@ -38,6 +38,7 @@ type SysMenuControl struct {
 	Sort       int             `form:"sort" comment:"排序"`          //排序
 	Visible    string          `form:"visible" comment:"是否显示"`     //是否显示
 	IsFrame    string          `form:"isFrame" comment:"是否frame"`  //是否frame
+	IsSystem   string          `form:"isSystem" comment:"是否系统菜单"`  //是否系统菜单
 	common.ControlBy
 }
 
@@ -70,6 +71,7 @@ func (s *SysMenuControl) Generate(model *models.SysMenu) {
 	model.Sort = s.Sort
 	model.Visible = s.Visible
 	model.IsFrame = s.IsFrame
+	model.IsSystem = s.IsSystem
 	if s.CreateBy != 0 {
 		model.CreateBy = s.CreateBy
 	}
