@@ -3,8 +3,8 @@ package apis
 import (
 	"context"
 	"encoding/json"
-	"git.nonolive.co/FE/mildom-video/pkg/app/dto/cms"
-	"git.nonolive.co/FE/mildom-video/pkg/app/mildomapi"
+	cms "git.nonolive.co/FE/mildom-video/pkg/cms/dto"
+	"git.nonolive.co/FE/mildom-video/pkg/cms/mildomapi"
 	"github.com/gin-gonic/gin"
 	"github.com/go-admin-team/go-admin-core/sdk/api"
 	"go-admin/app/rpc"
@@ -186,5 +186,19 @@ func (v Video) AddOrUpdateVideo(c *gin.Context) {
 
 		v.OK(nil, "操作成功")
 	}
+
+}
+
+
+func (v Video) ListAllTags(c *gin.Context) {
+	resp, err := rpc.MildomVideoCmsServiceClient.ListAllTags(context.Background(), &mildomapi.ListAllTagsReq{})
+	if err != nil {
+		return
+	}
+
+	tagsResp := cms.ListAllTagsResp{}
+	json.Unmarshal(resp.Results, &tagsResp)
+
+	v.OK(tagsResp, "请求成功")
 
 }

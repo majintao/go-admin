@@ -20,5 +20,6 @@ func videoCheckRoleRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddlew
 		r.POST("/getVideo", video.GetVideo)
 		r.POST("/updateVideoStatus", video.UpdateVideoStatus)
 		r.POST("/addOrUpdateVideo", video.AddOrUpdateVideo)
+		r.POST("/listAllTags", video.ListAllTags)
 	}
 }

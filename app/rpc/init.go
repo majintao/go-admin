@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"git.nonolive.co/FE/mildom-video/pkg/app/mildomapi"
+	"git.nonolive.co/FE/mildom-video/pkg/cms/mildomapi"
 	"github.com/douyu/jupiter/pkg/client/grpc"
 	"github.com/go-admin-team/go-admin-core/sdk"
 	"time"
