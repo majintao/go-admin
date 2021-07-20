@@ -128,6 +128,7 @@ func (e *SysUser) Update(c *dto.SysUserControl) error {
 	}
 
 	// 赋值更新参数
+	c.Password = model.Password // 密码不提供修改这里
 	c.Generate(&model)
 	model.Roles = rolelist
 	db = tx.Session(&gorm.Session{FullSaveAssociations: true}).Debug().Save(&model) // 保存用户信息以及角色关联信息
